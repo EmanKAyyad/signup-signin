@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -10,6 +11,7 @@ import {
   CreateUserModel,
 } from 'src/models/sign-up.model';
 import { AuthService } from 'src/authenticate/authenticate.service';
+import { returnSuccess } from 'src/utils/return-success.handler';
 
 @Controller('authenticate')
 export class AuthenticateController {
@@ -24,9 +26,9 @@ export class AuthenticateController {
         email: body.email,
         password: body.password,
       });
-      return { message: 'User signed up successfully', user };
+      return returnSuccess(user, 'User signed up successfully');
     } catch (error) {
-      return error;
+      throw new BadRequestException(error);
     }
   }
 

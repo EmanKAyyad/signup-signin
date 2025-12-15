@@ -1,0 +1,7 @@
+@use 'colors';
+
+.form-control {
+  &.error {
+    border-color: colors.$color-error;
+  }
+}

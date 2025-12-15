@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './theme/_button.scss';
 import './theme/_global.scss';
+import './theme/_input.scss';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

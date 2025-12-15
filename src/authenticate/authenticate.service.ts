@@ -70,12 +70,15 @@ export class AuthService {
 
     const token = this.jwtService.sign({ name, email, _id });
 
-    return returnSuccess({
-      email: existingUser.email,
-      name: existingUser.name,
-      _id: existingUser._id.toString(),
-      token,
-    });
+    return returnSuccess(
+      {
+        email: existingUser.email,
+        name: existingUser.name,
+        _id: existingUser._id.toString(),
+        token,
+      },
+      'User signed in successfully',
+    );
   }
 
   private findByEmail(email: string): Promise<User | null> {

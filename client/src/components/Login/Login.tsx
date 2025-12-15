@@ -58,7 +58,7 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className={styles.background}>
+    <div className="background">
       <div className="container text-center">
         <div className={styles.header}>
           <img src={logo} alt="" />
@@ -72,7 +72,7 @@ export const Login: React.FC = () => {
 
             <div className={styles['login-container']}>
               <form onSubmit={handleSubmit}>
-                <div className={styles['form-group'] + ' mb-3'}>
+                <div className="text-start mb-3">
                   <label className="form-label" htmlFor="email">
                     Email:
                   </label>
@@ -85,7 +85,7 @@ export const Login: React.FC = () => {
                     placeholder="Enter your email"
                   />
                 </div>
-                <div className={styles['form-group']}>
+                <div className="text-start">
                   <label className="form-label" htmlFor="password">
                     Password:
                   </label>
