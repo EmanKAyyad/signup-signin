@@ -3,7 +3,6 @@ import {
   IsNotEmpty,
   IsString,
   Matches,
-  Min,
   MinLength,
 } from 'class-validator';
 import { passwordRegex } from 'src/utils/globals';
@@ -33,6 +32,9 @@ export class AuthenticateUserModel {
   email: string;
 }
 
-export class UserWithToken extends CreateUserModel {
+export class UserWithToken {
   token: string;
+  _id: string;
+  email: string;
+  name: string;
 }

@@ -1,9 +1,7 @@
 import {
-  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
-  Post,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  HttpException,
   Injectable,
 } from '@nestjs/common';
 import {
@@ -14,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ReturnSuccess, returnSuccess } from 'src/utils/return-success.handler';
 
 const scrypt = promisify(_scrypt);
 
@@ -28,7 +30,7 @@ export class AuthService {
     const existing = await this.findByEmail(user.email);
 
     if (existing) {
-      throw new ConflictException('Email already exists');
+      throw new BadRequestException('Email or password are incorrect');
     }
 
     const salt = randomBytes(8).toString('hex');
@@ -46,27 +48,34 @@ export class AuthService {
       if (err.code === 11000) {
         throw new ConflictException('Email already exists');
       }
-      throw err;
+      throw new BadRequestException(err);
     }
   }
 
-  async authenticate(user: AuthenticateUserModel): Promise<UserWithToken> {
+  async authenticate(
+    user: AuthenticateUserModel,
+  ): Promise<ReturnSuccess<UserWithToken> | HttpException> {
     const existingUser = await this.findByEmail(user.email);
 
     if (!existingUser) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException('Email or password are incorrect');
     }
     const { name, email, _id } = existingUser;
     const [salt, storedHash] = existingUser.password.split('.');
     const hash = (await scrypt(user.password, salt, 32)) as Buffer;
 
     if (storedHash !== hash.toString('hex')) {
-      throw new BadRequestException('Invalid password');
+      throw new BadRequestException('Email or password are incorrect');
     }
 
     const token = this.jwtService.sign({ name, email, _id });
 
-    return { ...existingUser, token };
+    return returnSuccess({
+      email: existingUser.email,
+      name: existingUser.name,
+      _id: existingUser._id.toString(),
+      token,
+    });
   }
 
   private findByEmail(email: string): Promise<User | null> {
