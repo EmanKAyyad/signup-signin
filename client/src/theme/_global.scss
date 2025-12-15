@@ -1,0 +1,8 @@
+@use 'colors';
+
+.error-message {
+  color: colors.$color-error;
+  font-size: 11px;
+  height: 12px;
+  text-align: left;
+}

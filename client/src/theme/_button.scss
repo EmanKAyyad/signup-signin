@@ -1,0 +1,22 @@
+@use 'colors';
+@use 'sass:color';
+
+.btn-su {
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.primary {
+    background-color: colors.$color-primary;
+    color: colors.$color-white;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: color.adjust(colors.$color-primary, $lightness: -10%);
+    }
+  }
+}

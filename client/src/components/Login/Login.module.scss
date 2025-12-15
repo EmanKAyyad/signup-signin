@@ -1,0 +1,57 @@
+@use '../../theme/colors';
+
+.background {
+  background-color: colors.$color-bg-secondary;
+  min-height: 100vh;
+
+  h1 {
+    color: colors.$color-text-primary;
+  }
+  .form-group {
+    text-align: left;
+  }
+}
+.header {
+  text-align: left;
+  padding: 20px 0;
+  margin-bottom: 60px;
+  img {
+    width: 60px;
+  }
+}
+
+.login-footer {
+  color: colors.$color-text-secondary;
+  a {
+    color: colors.$color-text-higlight;
+  }
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+
+  button[type='submit'] {
+    position: relative;
+  }
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  position: absolute;
+  top: 12px;
+  left: 56%;
+  display: inline-block;
+  margin-inline-start: 8px;
+  width: 15px;
+  aspect-ratio: 1;
+  border-radius: 100%;
+  border: 1.5px solid;
+  border-color: #fff #fff0;
+  animation: l1 1s infinite;
+}
+@keyframes l1 {
+  to {
+    transform: rotate(0.5turn);
+  }
+}
