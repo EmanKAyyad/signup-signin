@@ -16,4 +16,8 @@ backend in on port 4000, frontend in on port 5173.
 
 to run the project using Docker and Nginx just run `docker-compose up --build` from the root dir to build both images and run the containers using docker-compose.yml file.
 
-Swagger impmenetation is deployed on `localhost:4000/api` for `/authenticate` and `/sign-up`
+Swagger impmenetation is deployed on `localhost:4000/api`
+
+`POST /authenticate` sign in user, public api
+`POST /sign-up` creates a use profile, public api
+`GET /users` fetch all users, protected api.
