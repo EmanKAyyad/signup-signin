@@ -1,0 +1,15 @@
+@use '../../theme/colors';
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0;
+  margin-bottom: 60px;
+  img {
+    width: 60px;
+  }
+
+  button {
+    color: colors.$color-text-secondary;
+  }
+}

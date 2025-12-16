@@ -3,19 +3,19 @@ import loginImg from '../../assets/login.png';
 import logo from '../../assets/logo.png';
 import styles from './Login.module.scss';
 import { CONFIG } from '../../../config';
-import { useNavigate } from 'react-router';
 import type {
   IErrorResponse,
   IResponseSuccess,
   IUser,
 } from '../../shared/types';
+import { useAuth } from '../../providers/authContext';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,9 +46,12 @@ export const Login: React.FC = () => {
         }
       }
 
-      if ('data' in data) {
-        localStorage.setItem('$$sut', data.data.token || '');
-        navigate('/dashboard');
+      if ('data' in data && data.data.token) {
+        login(data?.data?.token, {
+          email: data.data.email,
+          name: data.data.email,
+          _id: data.data._id,
+        });
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

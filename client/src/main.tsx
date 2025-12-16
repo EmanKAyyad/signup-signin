@@ -7,11 +7,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './theme/_button.scss';
 import './theme/_global.scss';
 import './theme/_input.scss';
+import { AuthProvider } from './providers/authContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );
