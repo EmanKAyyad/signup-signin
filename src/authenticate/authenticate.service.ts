@@ -18,6 +18,7 @@ import { User } from 'src/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ReturnSuccess, returnSuccess } from 'src/utils/return-success.handler';
+import { maskEmail } from 'src/utils/mask-sensitive';
 import { TokenDenylistService } from './token-denylist.service';
 
 const scrypt = promisify(_scrypt);
@@ -36,7 +37,7 @@ export class AuthService {
     const existing = await this.findByEmail(user.email);
 
     if (existing) {
-      this.logger.warn(`Sign-up attempt with existing email: ${user.email.replace(/.(?=.*@)/g, '*')}`);
+      this.logger.warn(`Sign-up attempt with existing email: ${maskEmail(user.email)}`);
       throw new BadRequestException('Email or password are incorrect');
     }
 
@@ -44,7 +45,7 @@ export class AuthService {
     const hash = (await scrypt(user.password, salt, 32)) as Buffer;
     user.password = `${salt}.${hash.toString('hex')}`;
 
-    this.logger.log(`New user registered: ${user.email.replace(/.(?=.*@)/g, '*')}`);
+    this.logger.log(`New user registered: ${maskEmail(user.email)}`);
     return this.create(user);
   }
 
@@ -56,6 +57,7 @@ export class AuthService {
       if (err.code === 11000) {
         throw new ConflictException('Email already exists');
       }
+      this.logger.error(`Unexpected DB error during user creation: ${err.message} (code=${err.code})`);
       throw new BadRequestException(err);
     }
   }
@@ -66,7 +68,7 @@ export class AuthService {
     const existingUser = await this.findByEmail(user.email);
 
     if (!existingUser) {
-      this.logger.warn(`Failed login — unknown email: ${user.email.replace(/.(?=.*@)/g, '*')}`);
+      this.logger.warn(`Failed login — unknown email: ${maskEmail(user.email)}`);
       throw new BadRequestException('Email or password are incorrect');
     }
     const { name, email, _id } = existingUser;
@@ -74,14 +76,14 @@ export class AuthService {
     const hash = (await scrypt(user.password, salt, 32)) as Buffer;
 
     if (storedHash !== hash.toString('hex')) {
-      this.logger.warn(`Failed login — wrong password for: ${user.email.replace(/.(?=.*@)/g, '*')}`);
+      this.logger.warn(`Failed login — wrong password for: ${maskEmail(user.email)}`);
       throw new BadRequestException('Email or password are incorrect');
     }
 
     const jti = randomUUID();
     const token = this.jwtService.sign({ name, email, _id, jti });
 
-    this.logger.log(`Successful login: ${user.email.replace(/.(?=.*@)/g, '*')}`);
+    this.logger.log(`Successful login: ${maskEmail(user.email)}`);
 
     return returnSuccess(
       {
