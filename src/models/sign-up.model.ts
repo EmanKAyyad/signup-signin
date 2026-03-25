@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsString,
   Matches,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 import { passwordRegex } from 'src/utils/globals';
@@ -12,20 +13,24 @@ export class CreateUserModel {
   @ApiProperty({
     description: 'user name',
     minLength: 3,
+    maxLength: 100,
   })
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
+  @MaxLength(100)
   name: string;
 
   @ApiProperty({
     description:
-      'user password, should contain one letter, one number and one special char. not less that 8 chars',
-    minLength: 8,
+      'user password, should contain one letter, one number and one special char. minimum 12 chars, maximum 128 chars',
+    minLength: 12,
+    maxLength: 128,
   })
   @IsString()
   @IsNotEmpty()
-  @MinLength(8)
+  @MinLength(12)
+  @MaxLength(128)
   @Matches(passwordRegex)
   password: string;
 

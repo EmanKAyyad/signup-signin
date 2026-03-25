@@ -34,9 +34,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     const storedUser = localStorage.getItem('user');
 
     if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+      try {
+        const parsed = JSON.parse(storedUser);
+        if (
+          parsed &&
+          typeof parsed._id === 'string' &&
+          typeof parsed.name === 'string' &&
+          typeof parsed.email === 'string'
+        ) {
+          setToken(storedToken);
+          setUser(parsed as IUser);
+          setIsAuthenticated(true);
+        } else {
+          localStorage.removeItem(tokenPrefix);
+          localStorage.removeItem('user');
+        }
+      } catch {
+        localStorage.removeItem(tokenPrefix);
+        localStorage.removeItem('user');
+      }
     }
     setLoading(false);
   }, []);
