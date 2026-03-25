@@ -87,3 +87,36 @@ JWT_SECRET=<secret>
 
 ### Docker
 `docker-compose.yml` orchestrates both containers on a shared `app-network`. The client uses `client/nginx.conf` for production serving.
+
+## Logging Rules
+
+All new backend actions **must** include logging using NestJS's `Logger` class. Follow these rules whenever adding a new controller route, service method, or guard:
+
+### Required log levels per action type
+
+| Action | Level | What to log |
+|--------|-------|-------------|
+| Incoming request (controller) | `info` | Action name + masked PII (use `maskEmail()` from `src/utils/mask-sensitive.ts`) |
+| Successful operation (service) | `info` | Outcome + safe identifiers (e.g. `_id`, masked email) |
+| Expected failure (wrong input, not found) | `warn` | Reason + masked PII — never raw passwords or tokens |
+| Unexpected failure (DB error, unhandled exception) | `error` | `err.message` + `err.code` — never the full `err` object |
+| Auth rejection (guard) | `warn` | Reason + `path` + `ip` — never the token value |
+| Read-only / query endpoints | `debug` | Requesting userId + endpoint |
+
+### Setup checklist for new classes
+
+```typescript
+// 1. Declare a logger at the top of every controller, service, or guard
+private readonly logger = new Logger(MyClassName.name);
+
+// 2. Import maskEmail for any log that involves an email address
+import { maskEmail } from 'src/utils/mask-sensitive';
+```
+
+### What must never appear in logs
+
+- Raw passwords
+- Full JWT tokens (log only the `jti` claim)
+- The `Authorization` header value
+- Full user/document objects from the DB
+- Environment secrets (`DB_URL`, `JWT_SECRET`)

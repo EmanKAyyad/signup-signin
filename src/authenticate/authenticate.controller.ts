@@ -3,6 +3,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Logger,
   Post,
   Req,
   UseGuards,
@@ -14,18 +15,22 @@ import {
 } from 'src/models/sign-up.model';
 import { AuthService } from 'src/authenticate/authenticate.service';
 import { returnSuccess } from 'src/utils/return-success.handler';
+import { maskEmail } from 'src/utils/mask-sensitive';
 import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from './auth.guard';
 import type { Request } from 'express';
 
 @Controller('authenticate')
 export class AuthenticateController {
+  private readonly logger = new Logger(AuthenticateController.name);
+
   constructor(private authService: AuthService) {}
 
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('sign-up')
   async createUser(@Body() body: CreateUserModel) {
+    this.logger.log(`Sign-up request received [email=${maskEmail(body.email)}]`);
     try {
       const user = await this.authService.signUp({
         name: body.name,
@@ -34,6 +39,9 @@ export class AuthenticateController {
       });
       return returnSuccess(user, 'User signed up successfully');
     } catch (error) {
+      this.logger.error(
+        `Sign-up failed [email=${maskEmail(body.email)}]: ${(error as Error).message}`,
+      );
       throw new BadRequestException(error);
     }
   }
@@ -51,6 +59,7 @@ export class AuthenticateController {
     if (payload?.jti) {
       this.authService.logout(payload.jti);
     }
+    this.logger.log('Logout request processed');
     return returnSuccess(null, 'Logged out successfully');
   }
 }
